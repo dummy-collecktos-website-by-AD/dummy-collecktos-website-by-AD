@@ -123,7 +123,8 @@ h2.s-t em{font-style:italic;color:var(--gold3);font-weight:300}
 .ac-d{font-size:0.84rem;color:var(--text2);line-height:1.72}
 
 /* ━━━ PLATFORM — 3D CINEMATIC ACCORDION ━━━ */
-#platform{background:var(--ink);color:var(--parchment);overflow:hidden;position:relative}
+/* #platform{background:var(--ink);color:var(--parchment);overflow:hidden;position:relative} */
+#platform{background:var(--parchment2);color:var(--text);overflow:hidden;position:relative}
 #platform::before{content:'INTELLIGENCE';position:absolute;right:-2rem;top:50%;transform:translateY(-50%) rotate(90deg);font-family:var(--serif);font-size:9rem;font-style:italic;font-weight:600;color:rgba(196,146,42,0.04);letter-spacing:0.05em;pointer-events:none;white-space:nowrap}
 #platform .s-label{color:var(--gold2)}
 #platform .s-label::after{background:var(--gold2)}
@@ -315,23 +316,29 @@ h2.s-t em{font-style:italic;color:var(--gold3);font-weight:300}
 .sv.gold-card h3{color:var(--gold3)}
 
 /* ━━━ WHY — CINEMATIC NUMBER REVEAL ━━━ */
-#why{background:var(--ink);color:var(--parchment);position:relative;overflow:hidden}
+/* #why{background:var(--ink);color:var(--parchment);position:relative;overflow:hidden} */
+#why{background:var(--parchment2);color:var(--text);position:relative;overflow:hidden}
 #why::after{content:'WHY';position:absolute;left:-1rem;bottom:-3rem;font-family:var(--serif);font-size:20rem;font-style:italic;font-weight:600;color:rgba(196,146,42,0.03);pointer-events:none;line-height:1}
 #why .s-label{color:var(--gold2)}
 #why .s-label::after{background:var(--gold2)}
-#why h2.s-t{color:var(--parchment)}
-#why h2.s-t em{color:var(--gold2)}
-#why .s-d{color:rgba(247,243,236,0.5)}
+/* #why h2.s-t{color:var(--parchment)} */
+/* #why h2.s-t em{color:var(--gold2)} */
+/* #why .s-d{color:rgba(247,243,236,0.5)} */
+#why h2.s-t{color:var(--ink)}
+#why h2.s-t em{color:var(--gold3)}
+#why .s-d{color:var(--text2)}
 
+
+  
 .why-intro{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:end;margin-bottom:5rem}
 
 .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.04)}
 .wc{
-  background:rgba(255,255,255,0.02);padding:3rem 2.5rem;position:relative;overflow:hidden;
+  background:var(--white);padding:3rem 2.5rem;position:relative;overflow:hidden;
   transition:background 0.35s,transform 0.5s cubic-bezier(0.16,1,0.3,1);
   cursor:default;
 }
-.wc:hover{background:rgba(255,255,255,0.05);transform:translateY(-4px)}
+.wc:hover{background:var(--parchment);transform:translateY(-4px)}
 
 /* 3D number that rises on hover */
 .wc-num{
@@ -346,8 +353,8 @@ h2.s-t em{font-style:italic;color:var(--gold3);font-weight:300}
 .wc-line{width:28px;height:2px;background:var(--gold3);margin-bottom:1.25rem;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
 .wc:hover .wc-line{width:48px;background:var(--gold2)}
 
-.wc h4{font-size:0.96rem;font-weight:600;color:rgba(247,243,236,0.9);margin-bottom:0.6rem}
-.wc p{font-size:0.84rem;color:rgba(247,243,236,0.45);line-height:1.78;font-weight:300}
+.wc h4{font-size:0.96rem;font-weight:600;color:var(--ink);margin-bottom:0.6rem}
+.wc p{font-size:0.84rem;color:var(--text2);line-height:1.78;font-weight:300}
 
 /* sliding bar at top on hover */
 .wc::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(to right,var(--gold3),var(--gold2),transparent);transform:scaleX(0);transform-origin:left;transition:transform 0.5s cubic-bezier(0.16,1,0.3,1)}
