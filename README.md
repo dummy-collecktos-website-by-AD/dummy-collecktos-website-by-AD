@@ -3,7 +3,7 @@
 A modern, production-grade website for **Collekto**, India's AI-powered Debt Intelligence Platform.
 
 ## 🚀 Live Site
-[View Website](https://YOUR_GITHUB_USERNAME.github.io/collekto-website)
+[View Website]([https://YOUR_GITHUB_USERNAME.github.io/collekto-website](https://dummy-collecktos-website-by-ad.github.io/dummy-collecktos-website-by-AD/))
 
 ## 🏗️ Tech Stack
 - Pure HTML5 / CSS3 / Vanilla JS — zero dependencies, zero build tools
