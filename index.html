@@ -1,1320 +1,789 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Collekto — Intelligent Debt Intelligence Platform</title>
-  <meta name="description" content="Collekto is a FinTech company leveraging Deep Reinforcement Learning to streamline retail debt collection and stressed asset reconstruction." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --gold: #C9A84C;
-      --gold-light: #E8CC7A;
-      --gold-dim: #8A6B2A;
-      --navy: #080E1F;
-      --navy-mid: #0D1630;
-      --navy-surface: #111D38;
-      --navy-card: #162040;
-      --navy-border: rgba(201,168,76,0.18);
-      --navy-border-soft: rgba(255,255,255,0.06);
-      --text-primary: #F0ECE0;
-      --text-secondary: #9BA3B8;
-      --text-muted: #5C6478;
-      --accent-blue: #3D7FD4;
-      --accent-teal: #1FA87A;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--navy);
-      color: var(--text-primary);
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    /* ─── NOISE TEXTURE OVERLAY ─── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
-    }
-
-    /* ─── NAVIGATION ─── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 1.25rem 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(8,14,31,0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 0.5px solid var(--navy-border);
-      transition: all 0.3s ease;
-    }
-
-    .nav-logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem;
-      color: var(--gold);
-      letter-spacing: 0.02em;
-      text-decoration: none;
-    }
-    .nav-logo span {
-      color: var(--text-secondary);
-      font-size: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 300;
-      display: block;
-      letter-spacing: 0.15em;
-      margin-top: -4px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2.5rem;
-      list-style: none;
-    }
-    .nav-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--gold); }
-
-    .nav-cta {
-      background: transparent;
-      border: 1px solid var(--gold-dim);
-      color: var(--gold);
-      padding: 0.55rem 1.5rem;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .nav-cta:hover {
-      background: var(--gold);
-      color: var(--navy);
-    }
-
-    /* ─── HERO ─── */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 4rem;
-      overflow: hidden;
-    }
-
-    .hero-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 0%, transparent 70%);
-    }
-
-    .hero-glow {
-      position: absolute;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(201,168,76,0.08);
-      border: 0.5px solid var(--navy-border);
-      color: var(--gold);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      padding: 0.4rem 1.1rem;
-      margin-bottom: 2rem;
-      animation: fadeUp 0.8s ease forwards;
-      opacity: 0;
-    }
-    .hero-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: var(--gold);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
-    }
-
-    .hero h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(3rem, 7vw, 6.5rem);
-      line-height: 1.05;
-      font-weight: 400;
-      margin-bottom: 1.5rem;
-      animation: fadeUp 0.8s ease 0.15s forwards;
-      opacity: 0;
-      max-width: 900px;
-    }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--gold);
-    }
-
-    .hero-sub {
-      font-size: 1.1rem;
-      color: var(--text-secondary);
-      max-width: 560px;
-      line-height: 1.75;
-      margin-bottom: 3rem;
-      font-weight: 400;
-      animation: fadeUp 0.8s ease 0.3s forwards;
-      opacity: 0;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      animation: fadeUp 0.8s ease 0.45s forwards;
-      opacity: 0;
-    }
-
-    .btn-primary {
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      padding: 0.85rem 2.5rem;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-      display: inline-block;
-    }
-    .btn-primary:hover {
-      background: var(--gold-light);
-      transform: translateY(-2px);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-primary);
-      border: 0.5px solid rgba(255,255,255,0.2);
-      padding: 0.85rem 2.5rem;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-      display: inline-block;
-    }
-    .btn-ghost:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
-    .hero-stats {
-      display: flex;
-      gap: 4rem;
-      margin-top: 5rem;
-      animation: fadeUp 0.8s ease 0.6s forwards;
-      opacity: 0;
-    }
-    .hero-stat {
-      text-align: center;
-    }
-    .hero-stat .num {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.8rem;
-      color: var(--gold);
-      display: block;
-    }
-    .hero-stat .label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─── CANVAS ANIMATION ─── */
-    #network-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%; height: 100%;
-      opacity: 0.35;
-      pointer-events: none;
-    }
-
-    /* ─── SECTION COMMONS ─── */
-    section {
-      position: relative;
-      z-index: 1;
-    }
-
-    .section-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 6rem 3rem;
-    }
-
-    .section-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .section-label::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 1px;
-      background: var(--gold-dim);
-    }
-
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 400;
-      line-height: 1.1;
-      margin-bottom: 1.25rem;
-    }
-    .section-title em {
-      font-style: italic;
-      color: var(--gold);
-    }
-
-    .section-desc {
-      font-size: 1.05rem;
-      color: var(--text-secondary);
-      max-width: 560px;
-      line-height: 1.8;
-    }
-
-    /* ─── ABOUT / MISSION ─── */
-    #about { background: var(--navy-mid); }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5rem;
-      align-items: center;
-    }
-
-    .about-visual {
-      position: relative;
-      aspect-ratio: 1;
-      max-width: 480px;
-    }
-
-    .about-ring {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 1px solid var(--navy-border);
-      position: absolute;
-      animation: spin 30s linear infinite;
-    }
-    .about-ring:nth-child(2) {
-      width: 75%; height: 75%;
-      top: 12.5%; left: 12.5%;
-      border-color: rgba(201,168,76,0.12);
-      animation-duration: 20s;
-      animation-direction: reverse;
-    }
-    .about-ring:nth-child(3) {
-      width: 50%; height: 50%;
-      top: 25%; left: 25%;
-      border-color: rgba(201,168,76,0.2);
-      animation-duration: 15s;
-    }
-    .about-center {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 120px; height: 120px;
-      background: var(--navy-card);
-      border: 1px solid var(--navy-border);
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .about-center .core-num {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2rem;
-      color: var(--gold);
-    }
-    .about-center .core-label {
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .dot-orbit {
-      position: absolute;
-      width: 10px; height: 10px;
-      background: var(--gold);
-      border-radius: 50%;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .about-points {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin-top: 2.5rem;
-    }
-    .about-point {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-    .about-point-icon {
-      width: 36px; height: 36px;
-      min-width: 36px;
-      background: rgba(201,168,76,0.08);
-      border: 0.5px solid var(--navy-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      margin-top: 2px;
-    }
-    .about-point-text strong {
-      display: block;
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 0.2rem;
-      color: var(--text-primary);
-    }
-    .about-point-text span {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    /* ─── PRODUCTS ─── */
-    #products { background: var(--navy); }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5px;
-      margin-top: 4rem;
-      background: var(--navy-border);
-    }
-
-    .product-card {
-      background: var(--navy);
-      padding: 3rem;
-      position: relative;
-      overflow: hidden;
-      transition: background 0.3s;
-    }
-    .product-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      transform: scaleX(0);
-      transition: transform 0.4s;
-    }
-    .product-card:hover::before {
-      transform: scaleX(1);
-    }
-    .product-card:hover {
-      background: var(--navy-surface);
-    }
-
-    .product-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--gold-dim);
-      letter-spacing: 0.1em;
-      margin-bottom: 2rem;
-    }
-
-    .product-icon {
-      width: 56px; height: 56px;
-      background: rgba(201,168,76,0.06);
-      border: 0.5px solid var(--navy-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .product-card h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem;
-      font-weight: 400;
-      margin-bottom: 0.75rem;
-    }
-
-    .product-card p {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.75;
-      margin-bottom: 2rem;
-    }
-
-    .product-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .product-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      color: var(--gold-dim);
-      background: rgba(201,168,76,0.06);
-      border: 0.5px solid rgba(201,168,76,0.15);
-      padding: 0.3rem 0.75rem;
-    }
-
-    /* ─── TECHNOLOGY ─── */
-    #technology { background: var(--navy-mid); }
-
-    .tech-layout {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 5rem;
-      align-items: start;
-      margin-top: 3rem;
-    }
-
-    .tech-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .tech-item {
-      background: var(--navy-card);
-      border: 0.5px solid var(--navy-border-soft);
-      padding: 1.5rem 1.75rem;
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    .tech-item::after {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 2px;
-      background: var(--gold);
-      transform: scaleY(0);
-      transition: transform 0.2s;
-    }
-    .tech-item:hover::after,
-    .tech-item.active::after {
-      transform: scaleY(1);
-    }
-    .tech-item:hover,
-    .tech-item.active {
-      background: rgba(201,168,76,0.04);
-      border-color: var(--navy-border);
-    }
-
-    .tech-icon-box {
-      width: 44px; height: 44px;
-      min-width: 44px;
-      background: rgba(201,168,76,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-    }
-
-    .tech-item-content strong {
-      display: block;
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 0.15rem;
-    }
-    .tech-item-content span {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-    }
-
-    .tech-detail {
-      position: sticky;
-      top: 8rem;
-      background: var(--navy-card);
-      border: 0.5px solid var(--navy-border);
-      padding: 2.5rem;
-    }
-
-    .tech-detail-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.75rem;
-      margin-bottom: 1rem;
-    }
-    .tech-detail-desc {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.8;
-      margin-bottom: 1.5rem;
-    }
-    .tech-detail-metrics {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--navy-border-soft);
-    }
-    .tech-metric {
-      background: var(--navy-surface);
-      padding: 1rem;
-    }
-    .tech-metric .val {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem;
-      color: var(--gold);
-    }
-    .tech-metric .lab {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    /* ─── WHY COLLEKTO ─── */
-    #why { background: var(--navy); }
-
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5px;
-      margin-top: 4rem;
-      background: var(--navy-border-soft);
-    }
-
-    .why-card {
-      background: var(--navy);
-      padding: 2.5rem;
-    }
-    .why-num {
-      font-family: 'DM Serif Display', serif;
-      font-size: 3.5rem;
-      color: rgba(201,168,76,0.15);
-      line-height: 1;
-      margin-bottom: 1.25rem;
-    }
-    .why-card h4 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    .why-card p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.75;
-    }
-
-    /* ─── MARQUEE ─── */
-    .marquee-wrap {
-      background: var(--navy-surface);
-      border-top: 0.5px solid var(--navy-border);
-      border-bottom: 0.5px solid var(--navy-border);
-      overflow: hidden;
-      padding: 1rem 0;
-    }
-    .marquee-track {
-      display: flex;
-      gap: 3rem;
-      animation: marquee 25s linear infinite;
-      width: max-content;
-    }
-    .marquee-item {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .marquee-item span {
-      color: var(--gold);
-      font-size: 1rem;
-    }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-
-    /* ─── CONTACT / CTA ─── */
-    #contact { background: var(--navy-mid); }
-
-    .contact-inner {
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-      padding: 7rem 3rem;
-    }
-
-    .contact-inner .section-title {
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-    }
-
-    .contact-form {
-      display: flex;
-      gap: 0;
-      margin-top: 3rem;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .contact-form input {
-      flex: 1;
-      background: var(--navy-card);
-      border: 0.5px solid var(--navy-border);
-      border-right: none;
-      color: var(--text-primary);
-      font-family: 'Syne', sans-serif;
-      font-size: 0.9rem;
-      padding: 0.85rem 1.25rem;
-      outline: none;
-    }
-    .contact-form input::placeholder { color: var(--text-muted); }
-    .contact-form input:focus { border-color: var(--gold); }
-
-    .contact-form button {
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      padding: 0.85rem 1.75rem;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
-    .contact-form button:hover { background: var(--gold-light); }
-
-    /* ─── FOOTER ─── */
-    footer {
-      background: var(--navy);
-      border-top: 0.5px solid var(--navy-border-soft);
-      padding: 2.5rem 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .footer-logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.3rem;
-      color: var(--gold);
-      text-decoration: none;
-    }
-
-    .footer-copy {
-      font-size: 0.78rem;
-      font-weight: 400;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-    .footer-links a {
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--gold); }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 900px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .section-inner { padding: 4rem 1.5rem; }
-      .about-grid,
-      .tech-layout,
-      .contact-form { grid-template-columns: 1fr; flex-direction: column; }
-      .products-grid,
-      .why-grid { grid-template-columns: 1fr; }
-      .hero-stats { gap: 2rem; }
-      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
-      .footer-links { justify-content: center; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Collekto — Intelligent Collections Platform</title>
+<meta name="description" content="AI-powered debt collection platform with 25+ years of industry expertise."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FAF8F3;
+  --cream2:#F5F1E8;
+  --cream3:#EDE8DC;
+  --white:#FFFFFF;
+  --ink:#1A1812;
+  --ink2:#2E2A22;
+  --ink3:#4A4438;
+  --gold:#B8922A;
+  --gold2:#D4A843;
+  --gold3:#8A6D1E;
+  --gold-bg:rgba(184,146,42,0.08);
+  --gold-bg2:rgba(184,146,42,0.14);
+  --teal:#1A6B5C;
+  --teal2:#0F4F43;
+  --teal-bg:rgba(26,107,92,0.07);
+  --rust:#8B3A2A;
+  --rust-bg:rgba(139,58,42,0.07);
+  --line:#D8D1C0;
+  --line2:#C8BFA8;
+  --text:#2E2A22;
+  --text2:#6B6355;
+  --text3:#9A9080;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'Courier Prime',monospace;
+  --shadow:0 2px 24px rgba(26,24,18,0.08);
+  --shadow2:0 8px 48px rgba(26,24,18,0.12);
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 4rem;display:flex;align-items:center;justify-content:space-between;background:rgba(250,248,243,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-logo{font-family:var(--serif);font-size:1.75rem;font-weight:600;font-style:italic;color:var(--gold3);text-decoration:none;letter-spacing:0.01em}
+.nav-logo sub{font-style:normal;font-size:0.55rem;font-family:var(--mono);letter-spacing:0.18em;color:var(--text3);vertical-align:middle;margin-left:4px;text-transform:uppercase}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:0.8rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{background:var(--teal);color:#fff;padding:0.55rem 1.5rem;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--teal2)}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;padding-top:70px;position:relative;overflow:hidden}
+.hero-left{padding:6rem 4rem 6rem 6rem;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.hero-right{position:relative;overflow:hidden}
+
+/* FINANCIAL BACKGROUND — SVG cityscape/charts as static scene */
+.hero-scene{position:absolute;inset:0;width:100%;height:100%}
+
+.hero-eyebrow{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.75rem;display:flex;align-items:center;gap:0.75rem;opacity:0;animation:fadeUp 0.7s ease 0.2s forwards}
+.eyebrow-dot{width:7px;height:7px;background:var(--gold);border-radius:50%}
+
+.hero h1{font-family:var(--serif);font-size:clamp(3rem,5.5vw,5.5rem);font-weight:600;line-height:1.0;letter-spacing:-0.01em;margin-bottom:1.25rem;opacity:0;animation:fadeUp 0.7s ease 0.35s forwards;color:var(--ink)}
+.hero h1 em{font-style:italic;color:var(--gold);font-weight:300}
+
+.hero-tagline{font-family:var(--serif);font-size:1.25rem;font-style:italic;font-weight:300;color:var(--text2);margin-bottom:2rem;line-height:1.6;opacity:0;animation:fadeUp 0.7s ease 0.5s forwards}
+
+.hero-desc{font-size:0.95rem;color:var(--text2);max-width:460px;line-height:1.85;font-weight:400;margin-bottom:2.5rem;opacity:0;animation:fadeUp 0.7s ease 0.65s forwards}
+
+.hero-actions{display:flex;gap:1rem;opacity:0;animation:fadeUp 0.7s ease 0.8s forwards}
+.btn-primary{background:var(--gold);color:#fff;padding:0.9rem 2.4rem;font-size:0.82rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;display:inline-block;border:none;cursor:pointer}
+.btn-primary:hover{background:var(--gold3);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn-secondary{background:transparent;color:var(--teal);border:1.5px solid var(--teal);padding:0.9rem 2.4rem;font-size:0.82rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;display:inline-block}
+.btn-secondary:hover{background:var(--teal-bg)}
+
+.hero-stats{display:flex;gap:0;margin-top:4rem;border:1px solid var(--line);opacity:0;animation:fadeUp 0.7s ease 0.95s forwards;background:var(--white)}
+.hstat{padding:1.25rem 2rem;border-right:1px solid var(--line);text-align:center}
+.hstat:last-child{border-right:none}
+.hstat .hv{font-family:var(--serif);font-size:2.2rem;font-style:italic;font-weight:600;color:var(--gold3);display:block;line-height:1}
+.hstat .hl{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-top:0.3rem;display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* TICKER */
+.ticker{background:var(--ink);overflow:hidden;padding:0.7rem 0}
+.ticker-track{display:flex;gap:2rem;animation:ticker 35s linear infinite;width:max-content}
+.ticker-item{font-family:var(--mono);font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);white-space:nowrap;display:flex;align-items:center;gap:0.9rem}
+.ticker-sep{color:var(--gold);opacity:0.7}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.sec{max-width:1240px;margin:0 auto;padding:6.5rem 4rem}
+.label{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:0.7rem}
+.label::after{content:'';height:1px;width:28px;background:var(--gold);opacity:0.5}
+h2.sec-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3.5rem);font-weight:600;line-height:1.08;margin-bottom:1.25rem;color:var(--ink)}
+h2.sec-title em{font-style:italic;color:var(--gold);font-weight:300}
+.sec-desc{font-size:0.98rem;color:var(--text2);max-width:520px;line-height:1.9;font-weight:400}
+
+/* SECTION BACKGROUNDS */
+#about{background:var(--white)}
+#architecture{background:var(--cream2)}
+#journey{background:var(--white);position:relative;overflow:hidden}
+#services{background:var(--cream2)}
+#why{background:var(--white)}
+#contact{background:var(--cream3)}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:center}
+.story-quote{font-family:var(--serif);font-size:1.4rem;font-style:italic;font-weight:300;color:var(--ink2);line-height:1.65;border-left:3px solid var(--gold);padding-left:1.75rem;margin:2rem 0}
+.about-cards{display:flex;flex-direction:column;gap:2px}
+.acard{background:var(--cream);border:1px solid var(--line);padding:1.6rem 2rem;transition:all 0.3s;position:relative;overflow:hidden}
+.acard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);transform:scaleY(0);transform-origin:bottom;transition:transform 0.3s}
+.acard:hover::before{transform:scaleY(1)}
+.acard:hover{background:var(--white);border-color:var(--line2)}
+.acard-num{font-family:var(--mono);font-size:0.62rem;color:var(--text3);letter-spacing:0.12em;margin-bottom:0.4rem}
+.acard-title{font-size:0.92rem;font-weight:700;color:var(--ink);margin-bottom:0.3rem}
+.acard-text{font-size:0.86rem;color:var(--text2);line-height:1.7}
+
+/* ── ARCHITECTURE 3-TIER ── */
+.arch-top{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:end;margin-bottom:3.5rem}
+.arch-mini{background:var(--white);border:1px solid var(--line);padding:2rem;box-shadow:var(--shadow)}
+.arch-mini-title{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem}
+.arch-mini-row{display:flex;align-items:center;gap:1rem;padding:0.6rem 0;border-bottom:1px solid var(--line)}
+.arch-mini-row:last-child{border-bottom:none}
+.arch-mini-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.arch-mini-label{font-size:0.88rem;font-weight:600;color:var(--ink)}
+.arch-mini-sub{font-family:var(--mono);font-size:0.65rem;color:var(--text3);margin-left:auto}
+.arch-connector{width:1px;height:14px;background:var(--line);margin-left:4px}
+
+.layers{display:flex;flex-direction:column;gap:3px}
+.layer{background:var(--white);border:1px solid var(--line);overflow:hidden;cursor:pointer;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow)}
+.layer:hover{border-color:var(--line2)}
+.layer-hdr{display:flex;align-items:center;gap:1.5rem;padding:1.6rem 2rem}
+.layer-lnum{font-family:var(--mono);font-size:0.62rem;color:var(--text3);letter-spacing:0.1em;min-width:2rem}
+.layer-ico{width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;border:1px solid var(--line)}
+.layer-info{flex:1}
+.layer-info strong{display:block;font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:0.15rem}
+.layer-info span{font-size:0.83rem;color:var(--text2)}
+.layer-chevron{font-size:0.75rem;color:var(--text3);transition:transform 0.3s;font-family:var(--mono)}
+.layer.open .layer-chevron{transform:rotate(180deg)}
+
+.layer-body{max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1)}
+.layer.open .layer-body{max-height:700px}
+.layer-inner{padding:0 2rem 2rem 5.5rem;border-top:1px solid var(--line)}
+.layer-mods{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);margin-top:1.5rem;margin-bottom:1.5rem}
+.lmod{background:var(--cream);padding:1.25rem 1.5rem}
+.lmod-name{font-size:0.85rem;font-weight:700;color:var(--ink);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem}
+.lmod-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.lmod p{font-size:0.82rem;color:var(--text2);line-height:1.65}
+.layer-mets{display:flex;gap:2px;background:var(--line)}
+.lmet{background:var(--cream2);padding:1rem 1.25rem;flex:1;text-align:center}
+.lmet .mv{font-family:var(--serif);font-size:1.5rem;font-style:italic;font-weight:600;color:var(--gold3)}
+.lmet .ml{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-top:0.2rem}
+
+/* layer color themes */
+.layer[data-t="exec"] .layer-ico{background:#FDF4F1;border-color:#E8C4B8}
+.layer[data-t="exec"] .layer-info strong{color:var(--rust)}
+.layer[data-t="exec"] .lmod-dot{background:var(--rust)}
+.layer[data-t="exec"].open{border-color:#D4998A}
+
+.layer[data-t="analytics"] .layer-ico{background:#F0F7F5;border-color:#9DCFBF}
+.layer[data-t="analytics"] .layer-info strong{color:var(--teal)}
+.layer[data-t="analytics"] .lmod-dot{background:var(--teal)}
+.layer[data-t="analytics"].open{border-color:#7ABFAD}
+
+.layer[data-t="intel"] .layer-ico{background:var(--gold-bg);border-color:#D4B870}
+.layer[data-t="intel"] .layer-info strong{color:var(--gold3)}
+.layer[data-t="intel"] .lmod-dot{background:var(--gold)}
+.layer[data-t="intel"].open{border-color:var(--gold2)}
+
+/* ── JOURNEY ── */
+/* Static financial illustration watermark */
+#journey::before{
+  content:'';position:absolute;right:-60px;top:50%;transform:translateY(-50%);
+  width:520px;height:520px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23B8922A' stroke-opacity='0.07'%3E%3Ccircle cx='200' cy='200' r='180' stroke-width='1'/%3E%3Ccircle cx='200' cy='200' r='140' stroke-width='1'/%3E%3Ccircle cx='200' cy='200' r='100' stroke-width='1'/%3E%3Ccircle cx='200' cy='200' r='60' stroke-width='1'/%3E%3Cline x1='20' y1='200' x2='380' y2='200' stroke-width='0.5'/%3E%3Cline x1='200' y1='20' x2='200' y2='380' stroke-width='0.5'/%3E%3Cline x1='73' y1='73' x2='327' y2='327' stroke-width='0.5'/%3E%3Cline x1='327' y1='73' x2='73' y2='327' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:contain;background-repeat:no-repeat;pointer-events:none;z-index:0;opacity:0.6;
+}
+
+.journey-wrap{position:relative;z-index:1}
+.journey-line-v{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--gold2) 8%,var(--gold2) 92%,transparent);transform:translateX(-50%)}
+.jitems{display:flex;flex-direction:column;gap:0}
+.jitem{display:grid;grid-template-columns:1fr 56px 1fr;align-items:center}
+.jcontent{padding:1.75rem 2.25rem;background:var(--white);border:1px solid var(--line);transition:all 0.3s;opacity:0;transform:translateY(16px)}
+.jcontent.vis{opacity:1;transform:translateY(0);transition:opacity 0.5s ease,transform 0.5s ease}
+.jcontent:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+.jnode{width:56px;display:flex;flex-direction:column;align-items:center;z-index:2;position:relative}
+.jdot{width:14px;height:14px;border-radius:50%;border:2px solid var(--gold);background:var(--cream);position:relative}
+.jdot::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(184,146,42,0.22)}
+.jstep{font-family:var(--mono);font-size:0.55rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-top:5px;white-space:nowrap}
+.jempty{background:transparent}
+.jtag{font-family:var(--mono);font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;display:inline-block;margin-bottom:0.6rem}
+.tag-rust{background:var(--rust-bg);color:var(--rust)}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-gold{background:var(--gold-bg);color:var(--gold3)}
+.jcontent h4{font-size:0.95rem;font-weight:700;color:var(--ink);margin-bottom:0.4rem}
+.jcontent p{font-size:0.84rem;color:var(--text2);line-height:1.7}
+
+/* ── SERVICES BENTO ── */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);margin-top:3.5rem}
+.bcell{background:var(--white);padding:2.5rem;transition:all 0.25s;position:relative}
+.bcell:hover{background:var(--cream)}
+.bcell.wide{grid-column:span 2}
+.bcell.tall{grid-row:span 2}
+.bcell.accent-gold{background:var(--gold-bg2)}
+.bcell.accent-gold:hover{background:rgba(184,146,42,0.18)}
+.bc-icon{font-size:1.75rem;margin-bottom:1rem;display:block}
+.bc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);margin-bottom:0.75rem}
+.bcell h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;font-style:italic;color:var(--ink);margin-bottom:0.7rem;line-height:1.3}
+.bcell p{font-size:0.86rem;color:var(--text2);line-height:1.75}
+.bc-pills{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1.25rem}
+.bc-pill{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.07em;padding:0.25rem 0.65rem;border:1px solid var(--line2);color:var(--text2);background:var(--cream)}
+
+/* ── WHY ── */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);margin-top:3.5rem}
+.wcard{background:var(--cream);padding:2.5rem;position:relative;transition:background 0.25s}
+.wcard:hover{background:var(--white)}
+.wcard-big{font-family:var(--serif);font-size:5rem;font-style:italic;font-weight:300;color:rgba(184,146,42,0.1);position:absolute;top:1rem;right:1.5rem;line-height:1;pointer-events:none}
+.wcard-icon{font-size:1.4rem;margin-bottom:1rem}
+.wcard h4{font-size:0.95rem;font-weight:700;color:var(--ink);margin-bottom:0.5rem}
+.wcard p{font-size:0.85rem;color:var(--text2);line-height:1.75}
+
+/* ── CONTACT ── */
+.contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:6rem;align-items:start}
+.cinfo{display:flex;flex-direction:column;gap:1.75rem;margin-top:2.5rem}
+.ci{display:flex;gap:1.25rem;align-items:flex-start}
+.ci-ico{width:42px;height:42px;min-width:42px;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.ci-text strong{display:block;font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:0.15rem}
+.ci-text span{font-size:0.86rem;color:var(--text2)}
+.cform{display:flex;flex-direction:column;gap:2px;background:var(--line)}
+.cf{background:var(--white);position:relative}
+.cf label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);padding:0.7rem 1.3rem 0;display:block}
+.cf input,.cf textarea,.cf select{width:100%;background:transparent;border:none;color:var(--text);font-family:var(--sans);font-size:0.92rem;font-weight:400;padding:0.4rem 1.3rem 0.9rem;outline:none;resize:none}
+.cf input::placeholder,.cf textarea::placeholder{color:var(--text3)}
+.cf:focus-within{background:var(--cream)}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line)}
+.cf-row .cf{background:var(--white)}
+.csub{background:var(--teal);color:#fff;border:none;padding:1.1rem;font-family:var(--sans);font-size:0.82rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;width:100%;transition:background 0.2s}
+.csub:hover{background:var(--teal2)}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:rgba(255,255,255,0.5);padding:2.25rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.06)}
+.fmark{font-family:var(--serif);font-size:1.4rem;font-style:italic;color:var(--gold2);text-decoration:none}
+.fcopy{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em}
+.flinks{display:flex;gap:2rem;list-style:none}
+.flinks a{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;transition:color 0.2s}
+.flinks a:hover{color:var(--gold2)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity 0.55s ease,transform 0.55s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-right{display:none}
+  .hero-left{padding:4rem 1.5rem}
+  .sec{padding:4rem 1.5rem}
+  .about-grid,.arch-top,.contact-grid{grid-template-columns:1fr}
+  .bento,.why-grid{grid-template-columns:1fr}
+  .bcell.wide{grid-column:span 1}
+  .jitem{grid-template-columns:1fr 44px}
+  .jempty{display:none}
+  footer{flex-direction:column;gap:1.5rem;text-align:center}
+}
+</style>
 </head>
-
 <body>
 
-<!-- ─── NAVIGATION ─── -->
+<!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">
-    Collekto
-    <span>FinTech Intelligence</span>
-  </a>
+  <a href="#" class="nav-logo">Collekto <sub>FinTech</sub></a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
-    <li><a href="#products">Products</a></li>
-    <li><a href="#technology">Technology</a></li>
+    <li><a href="#architecture">Platform</a></li>
+    <li><a href="#services">Services</a></li>
     <li><a href="#why">Why Us</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">Get in Touch</a>
+  <a href="#contact" class="nav-cta">Partner With Us</a>
 </nav>
 
 
-<!-- ─── HERO ─── -->
+<!-- ═══ HERO ═══ -->
 <section class="hero" id="home">
-  <canvas id="network-canvas"></canvas>
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
 
-  <div class="hero-badge">AI-Powered Debt Intelligence</div>
-
-  <h1>
-    Redefining the Future<br>
-    of <em>Debt Recovery</em>
-  </h1>
-
-  <p class="hero-sub">
-    Deep Reinforcement Learning meets financial services.
-    Collekto transforms retail debt collection and stressed asset
-    reconstruction through intelligent, humane, and efficient AI systems.
-  </p>
-
-  <div class="hero-actions">
-    <a href="#products" class="btn-primary">Explore Platform</a>
-    <a href="#technology" class="btn-ghost">Our Technology</a>
-  </div>
-
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <span class="num">↑40%</span>
-      <span class="label">Collection Efficiency</span>
+  <!-- LEFT: copy -->
+  <div class="hero-left">
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>India's Intelligence-First Collections Platform</div>
+    <h1>The Future of<br><em>Debt Intelligence</em></h1>
+    <p class="hero-tagline">"Our AI understands, predicts, and empowers customers to pay — not to catch them out."</p>
+    <p class="hero-desc">25 years of collections expertise, re-engineered through Deep Reinforcement Learning. A 3-tier AI platform built for lending institutions and ARCs across India.</p>
+    <div class="hero-actions">
+      <a href="#architecture" class="btn-primary">Explore Platform</a>
+      <a href="#journey" class="btn-secondary">See How It Works</a>
     </div>
-    <div class="hero-stat">
-      <span class="num">3×</span>
-      <span class="label">Faster Settlement</span>
-    </div>
-    <div class="hero-stat">
-      <span class="num">2018</span>
-      <span class="label">Founded</span>
+    <div class="hero-stats">
+      <div class="hstat"><span class="hv">25+</span><span class="hl">Yrs Experience</span></div>
+      <div class="hstat"><span class="hv">3</span><span class="hl">AI Layers</span></div>
+      <div class="hstat"><span class="hv">2018</span><span class="hl">Founded</span></div>
     </div>
   </div>
+
+  <!-- RIGHT: financial environment SVG illustration -->
+  <div class="hero-right">
+    <svg class="hero-scene" viewBox="0 0 700 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <!-- warm parchment bg -->
+      <rect width="700" height="900" fill="#F0EBE0"/>
+
+      <!-- large subtle grid -->
+      <g stroke="#B8922A" stroke-opacity="0.08" stroke-width="0.7">
+        <line x1="0" y1="100" x2="700" y2="100"/>
+        <line x1="0" y1="200" x2="700" y2="200"/>
+        <line x1="0" y1="300" x2="700" y2="300"/>
+        <line x1="0" y1="400" x2="700" y2="400"/>
+        <line x1="0" y1="500" x2="700" y2="500"/>
+        <line x1="0" y1="600" x2="700" y2="600"/>
+        <line x1="0" y1="700" x2="700" y2="700"/>
+        <line x1="0" y1="800" x2="700" y2="800"/>
+        <line x1="100" y1="0" x2="100" y2="900"/>
+        <line x1="200" y1="0" x2="200" y2="900"/>
+        <line x1="300" y1="0" x2="300" y2="900"/>
+        <line x1="400" y1="0" x2="400" y2="900"/>
+        <line x1="500" y1="0" x2="500" y2="900"/>
+        <line x1="600" y1="0" x2="600" y2="900"/>
+      </g>
+
+      <!-- CITY SKYLINE silhouette at bottom -->
+      <g fill="#C8B898" fill-opacity="0.35">
+        <!-- buildings row 1 (far background) -->
+        <rect x="0" y="680" width="30" height="220"/>
+        <rect x="35" y="650" width="20" height="250"/>
+        <rect x="60" y="700" width="25" height="200"/>
+        <rect x="90" y="630" width="40" height="270"/>
+        <rect x="135" y="670" width="18" height="230"/>
+        <rect x="158" y="640" width="35" height="260"/>
+        <rect x="198" y="680" width="22" height="220"/>
+        <rect x="225" y="620" width="50" height="280"/>
+        <rect x="280" y="660" width="28" height="240"/>
+        <rect x="313" y="635" width="45" height="265"/>
+        <rect x="363" y="670" width="20" height="230"/>
+        <rect x="388" y="645" width="38" height="255"/>
+        <rect x="430" y="680" width="25" height="220"/>
+        <rect x="460" y="625" width="55" height="275"/>
+        <rect x="520" y="655" width="30" height="245"/>
+        <rect x="555" y="640" width="40" height="260"/>
+        <rect x="600" y="660" width="22" height="240"/>
+        <rect x="627" y="630" width="45" height="270"/>
+        <rect x="675" y="670" width="25" height="230"/>
+        <!-- windows on tall building -->
+        <rect x="228" y="630" width="6" height="8" fill="#B8922A" fill-opacity="0.3"/>
+        <rect x="238" y="630" width="6" height="8" fill="#B8922A" fill-opacity="0.3"/>
+        <rect x="248" y="630" width="6" height="8" fill="#B8922A" fill-opacity="0.3"/>
+        <rect x="228" y="645" width="6" height="8" fill="#B8922A" fill-opacity="0.2"/>
+        <rect x="248" y="645" width="6" height="8" fill="#B8922A" fill-opacity="0.4"/>
+        <rect x="462" y="635" width="6" height="8" fill="#B8922A" fill-opacity="0.3"/>
+        <rect x="472" y="635" width="6" height="8" fill="#B8922A" fill-opacity="0.2"/>
+        <rect x="482" y="635" width="6" height="8" fill="#B8922A" fill-opacity="0.35"/>
+        <rect x="492" y="635" width="6" height="8" fill="#B8922A" fill-opacity="0.15"/>
+        <rect x="462" y="650" width="6" height="8" fill="#B8922A" fill-opacity="0.25"/>
+        <rect x="482" y="650" width="6" height="8" fill="#B8922A" fill-opacity="0.3"/>
+      </g>
+
+      <!-- STOCK CHART — main line chart -->
+      <g transform="translate(60,100)">
+        <!-- axes -->
+        <line x1="0" y1="0" x2="0" y2="280" stroke="#B8922A" stroke-opacity="0.25" stroke-width="1"/>
+        <line x1="0" y1="280" x2="580" y2="280" stroke="#B8922A" stroke-opacity="0.25" stroke-width="1"/>
+        <!-- horizontal grid -->
+        <line x1="0" y1="70" x2="580" y2="70" stroke="#B8922A" stroke-opacity="0.1" stroke-width="0.5" stroke-dasharray="4,4"/>
+        <line x1="0" y1="140" x2="580" y2="140" stroke="#B8922A" stroke-opacity="0.1" stroke-width="0.5" stroke-dasharray="4,4"/>
+        <line x1="0" y1="210" x2="580" y2="210" stroke="#B8922A" stroke-opacity="0.1" stroke-width="0.5" stroke-dasharray="4,4"/>
+        <!-- area fill under chart -->
+        <path d="M0,220 C30,210 60,230 100,200 C140,170 160,180 200,150 C240,120 260,140 300,110 C340,80 360,100 400,70 C440,40 470,60 520,30 C550,15 570,20 580,10 L580,280 L0,280 Z"
+              fill="#B8922A" fill-opacity="0.05"/>
+        <!-- chart line -->
+        <path d="M0,220 C30,210 60,230 100,200 C140,170 160,180 200,150 C240,120 260,140 300,110 C340,80 360,100 400,70 C440,40 470,60 520,30 C550,15 570,20 580,10"
+              fill="none" stroke="#B8922A" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/>
+        <!-- data point dots -->
+        <circle cx="100" cy="200" r="3.5" fill="#B8922A" fill-opacity="0.5"/>
+        <circle cx="200" cy="150" r="3.5" fill="#B8922A" fill-opacity="0.5"/>
+        <circle cx="300" cy="110" r="3.5" fill="#B8922A" fill-opacity="0.5"/>
+        <circle cx="400" cy="70" r="3.5" fill="#B8922A" fill-opacity="0.5"/>
+        <circle cx="520" cy="30" r="4.5" fill="#B8922A" fill-opacity="0.7"/>
+        <!-- axis labels -->
+        <text x="0" y="298" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">Q1</text>
+        <text x="96" y="298" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">Q2</text>
+        <text x="196" y="298" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">Q3</text>
+        <text x="296" y="298" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">Q4</text>
+        <text x="396" y="298" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">Q1</text>
+        <text x="516" y="298" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">Q2</text>
+        <text x="-40" y="73" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">HIGH</text>
+        <text x="-38" y="143" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">MID</text>
+        <text x="-36" y="213" font-family="Courier Prime,monospace" font-size="9" fill="#B8922A" fill-opacity="0.4">LOW</text>
+        <!-- chart title -->
+        <text x="0" y="-15" font-family="Courier Prime,monospace" font-size="10" fill="#B8922A" fill-opacity="0.45" letter-spacing="2">PORTFOLIO RECOVERY RATE</text>
+      </g>
+
+      <!-- BAR CHART block (small, mid-right) -->
+      <g transform="translate(420,440)">
+        <text x="0" y="-12" font-family="Courier Prime,monospace" font-size="9" fill="#1A6B5C" fill-opacity="0.4" letter-spacing="2">COLLECTION EFFICIENCY</text>
+        <!-- bars -->
+        <rect x="0"   y="100" width="28" height="60" fill="#1A6B5C" fill-opacity="0.15"/>
+        <rect x="36"  y="75"  width="28" height="85" fill="#1A6B5C" fill-opacity="0.2"/>
+        <rect x="72"  y="55"  width="28" height="105" fill="#1A6B5C" fill-opacity="0.25"/>
+        <rect x="108" y="30"  width="28" height="130" fill="#1A6B5C" fill-opacity="0.3"/>
+        <rect x="144" y="10"  width="28" height="150" fill="#1A6B5C" fill-opacity="0.35"/>
+        <!-- base line -->
+        <line x1="0" y1="160" x2="182" y2="160" stroke="#1A6B5C" stroke-opacity="0.2" stroke-width="1"/>
+        <!-- bar labels -->
+        <text x="7"  y="175" font-family="Courier Prime,monospace" font-size="8" fill="#1A6B5C" fill-opacity="0.4">Y1</text>
+        <text x="43" y="175" font-family="Courier Prime,monospace" font-size="8" fill="#1A6B5C" fill-opacity="0.4">Y2</text>
+        <text x="79" y="175" font-family="Courier Prime,monospace" font-size="8" fill="#1A6B5C" fill-opacity="0.4">Y3</text>
+        <text x="115" y="175" font-family="Courier Prime,monospace" font-size="8" fill="#1A6B5C" fill-opacity="0.4">Y4</text>
+        <text x="151" y="175" font-family="Courier Prime,monospace" font-size="8" fill="#1A6B5C" fill-opacity="0.4">Y5</text>
+      </g>
+
+      <!-- PIE / DONUT ring (top right) -->
+      <g transform="translate(550,80)">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#B8922A" stroke-opacity="0.12" stroke-width="14"/>
+        <!-- segments -->
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#B8922A" stroke-opacity="0.35" stroke-width="14"
+                stroke-dasharray="188 126" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#1A6B5C" stroke-opacity="0.3" stroke-width="14"
+                stroke-dasharray="80 234" stroke-dashoffset="-188" transform="rotate(-90 60 60)"/>
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#8B3A2A" stroke-opacity="0.2" stroke-width="14"
+                stroke-dasharray="46 268" stroke-dashoffset="-268" transform="rotate(-90 60 60)"/>
+        <text x="60" y="56" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" fill="#B8922A" fill-opacity="0.5" font-style="italic">60%</text>
+        <text x="60" y="70" text-anchor="middle" font-family="Courier Prime,monospace" font-size="7" fill="#B8922A" fill-opacity="0.4" letter-spacing="1">RESOLVED</text>
+        <!-- legend -->
+        <rect x="-30" y="135" width="8" height="8" fill="#B8922A" fill-opacity="0.35"/>
+        <text x="-18" y="143" font-family="Courier Prime,monospace" font-size="8" fill="#B8922A" fill-opacity="0.4">Digital</text>
+        <rect x="50" y="135" width="8" height="8" fill="#1A6B5C" fill-opacity="0.3"/>
+        <text x="62" y="143" font-family="Courier Prime,monospace" font-size="8" fill="#1A6B5C" fill-opacity="0.4">Field</text>
+        <rect x="110" y="135" width="8" height="8" fill="#8B3A2A" fill-opacity="0.2"/>
+        <text x="122" y="143" font-family="Courier Prime,monospace" font-size="8" fill="#8B3A2A" fill-opacity="0.4">Legal</text>
+      </g>
+
+      <!-- CANDLESTICK strip -->
+      <g transform="translate(60,490)">
+        <text x="0" y="-12" font-family="Courier Prime,monospace" font-size="9" fill="#8B3A2A" fill-opacity="0.4" letter-spacing="2">DELINQUENCY INDEX</text>
+        <line x1="0" y1="80" x2="580" y2="80" stroke="#8B3A2A" stroke-opacity="0.1" stroke-width="0.5"/>
+        <line x1="0" y1="40" x2="580" y2="40" stroke="#8B3A2A" stroke-opacity="0.1" stroke-width="0.5"/>
+        <!-- candles -->
+        <g fill="#8B3A2A" fill-opacity="0.25" stroke="#8B3A2A" stroke-opacity="0.35" stroke-width="1">
+          <line x1="20" y1="15" x2="20" y2="90"/><rect x="14" y="30" width="12" height="45"/>
+          <line x1="55" y1="20" x2="55" y2="80"/><rect x="49" y="35" width="12" height="30"/>
+          <line x1="90" y1="10" x2="90" y2="75"/><rect x="84" y="25" width="12" height="35" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="125" y1="18" x2="125" y2="85"/><rect x="119" y="32" width="12" height="40"/>
+          <line x1="160" y1="5" x2="160" y2="70"/><rect x="154" y="18" width="12" height="35" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="195" y1="22" x2="195" y2="88"/><rect x="189" y="38" width="12" height="35"/>
+          <line x1="230" y1="12" x2="230" y2="78"/><rect x="224" y="25" width="12" height="40" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="265" y1="8" x2="265" y2="72"/><rect x="259" y="20" width="12" height="38"/>
+          <line x1="300" y1="16" x2="300" y2="82"/><rect x="294" y="30" width="12" height="36" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="335" y1="4" x2="335" y2="68"/><rect x="329" y="15" width="12" height="32"/>
+          <line x1="370" y1="10" x2="370" y2="76"/><rect x="364" y="22" width="12" height="40" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="405" y1="18" x2="405" y2="80"/><rect x="399" y="30" width="12" height="34"/>
+          <line x1="440" y1="6" x2="440" y2="70"/><rect x="434" y="18" width="12" height="28" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="475" y1="14" x2="475" y2="78"/><rect x="469" y="26" width="12" height="38"/>
+          <line x1="510" y1="2" x2="510" y2="65"/><rect x="504" y="14" width="12" height="30" fill="#1A6B5C" fill-opacity="0.2" stroke="#1A6B5C" stroke-opacity="0.35"/>
+          <line x1="545" y1="10" x2="545" y2="72"/><rect x="539" y="22" width="12" height="35"/>
+        </g>
+      </g>
+
+      <!-- WATERMARK TEXT -->
+      <text x="350" y="870" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="11" fill="#B8922A" fill-opacity="0.3" letter-spacing="4" font-style="italic">COLLEKTO · FINANCIAL INTELLIGENCE</text>
+
+      <!-- gradient overlay on left edge for blending -->
+      <defs>
+        <linearGradient id="fadeL" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#F0EBE0" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#F0EBE0" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="fadeB" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="80%" stop-color="#F0EBE0" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#F0EBE0" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+      <rect width="700" height="900" fill="url(#fadeL)"/>
+      <rect width="700" height="900" fill="url(#fadeB)"/>
+    </svg>
+  </div>
+
 </section>
 
 
-<!-- ─── MARQUEE ─── -->
-<div class="marquee-wrap">
-  <div class="marquee-track">
-    <span class="marquee-item"><span>◆</span> Deep Reinforcement Learning</span>
-    <span class="marquee-item"><span>◆</span> Debt Collection</span>
-    <span class="marquee-item"><span>◆</span> Asset Reconstruction</span>
-    <span class="marquee-item"><span>◆</span> Skip Trace</span>
-    <span class="marquee-item"><span>◆</span> Portfolio Analytics</span>
-    <span class="marquee-item"><span>◆</span> AI-Powered Pricing</span>
-    <span class="marquee-item"><span>◆</span> Full Stack Service</span>
-    <span class="marquee-item"><span>◆</span> Delinquency Prediction</span>
-    <span class="marquee-item"><span>◆</span> Deep Reinforcement Learning</span>
-    <span class="marquee-item"><span>◆</span> Debt Collection</span>
-    <span class="marquee-item"><span>◆</span> Asset Reconstruction</span>
-    <span class="marquee-item"><span>◆</span> Skip Trace</span>
-    <span class="marquee-item"><span>◆</span> Portfolio Analytics</span>
-    <span class="marquee-item"><span>◆</span> AI-Powered Pricing</span>
-    <span class="marquee-item"><span>◆</span> Full Stack Service</span>
-    <span class="marquee-item"><span>◆</span> Delinquency Prediction</span>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Deep Reinforcement Learning<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Smart Dialer + CRM<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Field Agent Optimization<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">SEAM Strategy Engine<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">LMC Recommendation AI<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Asset Reconstruction<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Skip Trace Network<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Real-Time Portfolio Analytics<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Litigation Module<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Digital Communications<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Deep Reinforcement Learning<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Smart Dialer + CRM<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Field Agent Optimization<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">SEAM Strategy Engine<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">LMC Recommendation AI<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Asset Reconstruction<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Skip Trace Network<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Real-Time Portfolio Analytics<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Litigation Module<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Digital Communications<span class="ticker-sep">◆</span></span>
   </div>
 </div>
 
 
-<!-- ─── ABOUT ─── -->
+<!-- ABOUT -->
 <section id="about">
-  <div class="section-inner">
-    <div class="about-grid">
-      <div>
-        <div class="section-label">Our Mission</div>
-        <h2 class="section-title">
-          Empowering Customers.<br>
-          Not <em>Catching</em> Them.
-        </h2>
-        <p class="section-desc">
-          Traditional debt collection systems are built to trap borrowers.
-          Collekto is built differently — our AI understands, predicts, and empowers customers
-          to resolve debt on their own terms, while maximizing outcomes for lenders.
-        </p>
-
-        <ul class="about-points">
-          <li class="about-point">
-            <div class="about-point-icon">🤖</div>
-            <div class="about-point-text">
-              <strong>AI-First Architecture</strong>
-              <span>Deep reinforcement learning models that adapt in real-time to borrower behaviour and market conditions.</span>
-            </div>
-          </li>
-          <li class="about-point">
-            <div class="about-point-icon">⚖️</div>
-            <div class="about-point-text">
-              <strong>Ethical Collections</strong>
-              <span>Customer-centric approach that reduces friction, increases dignity, and improves repayment rates simultaneously.</span>
-            </div>
-          </li>
-          <li class="about-point">
-            <div class="about-point-icon">📊</div>
-            <div class="about-point-text">
-              <strong>Full-Spectrum Intelligence</strong>
-              <span>From early delinquency prediction to stressed asset portfolio pricing — one platform, end to end.</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div class="about-visual" style="display:flex; align-items:center; justify-content:center;">
-        <div style="position:relative; width:360px; height:360px;">
-          <div class="about-ring" style="width:100%;height:100%;border:1px solid rgba(201,168,76,0.1);border-radius:50%;position:absolute;animation:spin 30s linear infinite;"></div>
-          <div class="about-ring" style="width:75%;height:75%;top:12.5%;left:12.5%;border:1px solid rgba(201,168,76,0.15);border-radius:50%;position:absolute;animation:spin 20s linear infinite reverse;"></div>
-          <div class="about-ring" style="width:50%;height:50%;top:25%;left:25%;border:1px solid rgba(201,168,76,0.25);border-radius:50%;position:absolute;animation:spin 12s linear infinite;"></div>
-          <div class="about-center">
-            <span class="core-num">AI</span>
-            <span class="core-label">Core Engine</span>
-          </div>
-          <!-- Orbiting dots -->
-          <div style="position:absolute;width:10px;height:10px;background:var(--gold);border-radius:50%;top:2%;left:48%;"></div>
-          <div style="position:absolute;width:8px;height:8px;background:var(--accent-teal);border-radius:50%;bottom:12%;right:8%;"></div>
-          <div style="position:absolute;width:6px;height:6px;background:var(--accent-blue);border-radius:50%;top:50%;left:3%;"></div>
-        </div>
-      </div>
+<div class="sec">
+  <div class="about-grid">
+    <div>
+      <div class="label">Our Origin</div>
+      <h2 class="sec-title">From <em>CaaS</em><br>to Platform</h2>
+      <p class="sec-desc" style="margin-bottom:1.5rem">We didn't build a collections platform and then learn the business. We lived it for 25 years — with iconic brands and financial institutions across India — and then built the platform the industry was missing.</p>
+      <blockquote class="story-quote">"Our vision is to create a new future in Debt Collections by productising human-driven collections."</blockquote>
+      <p class="sec-desc">Starting as a Collections-as-a-Service provider, we accumulated deep operational insight that no pure-tech startup can replicate.</p>
+    </div>
+    <div class="about-cards">
+      <div class="acard reveal"><div class="acard-num">01 / Genesis</div><div class="acard-title">25+ Years of Industry Roots</div><p class="acard-text">Deep partnerships with iconic brands and financial institutions across India's lending ecosystem, long before "FinTech" became a buzzword.</p></div>
+      <div class="acard reveal"><div class="acard-num">02 / Evolution</div><div class="acard-title">CaaS Provider → Product Company</div><p class="acard-text">We operated as a CaaS provider, learning every failure point, every compliance gap, every human bottleneck — then engineered them out.</p></div>
+      <div class="acard reveal"><div class="acard-num">03 / Innovation</div><div class="acard-title">Productising Human-Driven Collections</div><p class="acard-text">Replace repetitive tasks with AI while preserving the human touch where it matters most — empathy, negotiation, last-mile conversion.</p></div>
+      <div class="acard reveal"><div class="acard-num">04 / Today</div><div class="acard-title">Proven, Measurable Results</div><p class="acard-text">Better controls, real-time monitoring, cost savings, and dramatically increased efficiency. Not projections — delivered track records.</p></div>
     </div>
   </div>
+</div>
 </section>
 
 
-<!-- ─── PRODUCTS ─── -->
-<section id="products">
-  <div class="section-inner">
-    <div class="section-label">Core Products</div>
-    <h2 class="section-title">
-      Two Platforms.<br>
-      One <em>Intelligent</em> Vision.
-    </h2>
+<!-- 3-TIER ARCHITECTURE -->
+<section id="architecture">
+<div class="sec">
+  <div class="arch-top">
+    <div>
+      <div class="label">Platform Architecture</div>
+      <h2 class="sec-title">The <em>3-Tier</em><br>Intelligence Stack</h2>
+      <p class="sec-desc">Every stage of the collections lifecycle — from first contact to final resolution — served by purpose-built tools in a coherent, layered architecture. Click each layer to explore.</p>
+    </div>
+    <div class="arch-mini">
+      <div class="arch-mini-title">Stack Overview</div>
+      <div class="arch-mini-row"><span class="arch-mini-dot" style="background:var(--gold)"></span><span class="arch-mini-label">Intelligence Layer</span><span class="arch-mini-sub">SEAM + LMC</span></div>
+      <div class="arch-connector"></div>
+      <div class="arch-mini-row"><span class="arch-mini-dot" style="background:var(--teal)"></span><span class="arch-mini-label">Analytics Layer</span><span class="arch-mini-sub">Real-Time Insights</span></div>
+      <div class="arch-connector"></div>
+      <div class="arch-mini-row"><span class="arch-mini-dot" style="background:var(--rust)"></span><span class="arch-mini-label">Execution Layer</span><span class="arch-mini-sub">4 Modules</span></div>
+    </div>
+  </div>
 
-    <div class="products-grid">
+  <div class="layers">
 
-      <div class="product-card">
-        <div class="product-num">01 / Retail Collections</div>
-        <div class="product-icon">🔄</div>
-        <h3>CollectAI Engine</h3>
-        <p>
-          A deep reinforcement learning system that revolutionizes retail debt collection.
-          By learning optimal engagement strategies for each borrower profile, it dramatically
-          increases resolution rates while reducing time to early settlement for delinquent accounts.
-        </p>
-        <div class="product-tags">
-          <span class="product-tag">DRL Algorithm</span>
-          <span class="product-tag">Borrower Segmentation</span>
-          <span class="product-tag">Early Intervention</span>
-          <span class="product-tag">Settlement Optimization</span>
+    <div class="layer" data-t="exec" onclick="toggleLayer(this)">
+      <div class="layer-hdr">
+        <span class="layer-lnum">L1</span>
+        <div class="layer-ico">⚡</div>
+        <div class="layer-info"><strong>Execution Layer</strong><span>On-the-ground tools for every collections touchpoint</span></div>
+        <span class="layer-chevron">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="layer-inner">
+          <div class="layer-mods">
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>Communication Suite</div><p>Smart Dialer with deep CRM integration. Telecallers get borrower context, sentiment history, and AI-suggested scripts — every call informed, every conversation purposeful.</p></div>
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>Field Agent App</div><p>Route-optimized field visits using location, traffic, and borrower propensity-to-pay scores. Agents cover more ground, close more accounts, every day.</p></div>
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>Digital Comms Module</div><p>Automated, multi-channel strategies — SMS, WhatsApp, email, IVR — orchestrated by AI to hit borrowers at the right moment on the right channel.</p></div>
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>Litigation Module <em style="font-size:0.75rem;color:var(--gold)"> — Coming Soon</em></div><p>Full in-platform control of your litigation pipeline. Track, escalate, and resolve legal cases without leaving the system.</p></div>
+          </div>
+          <div class="layer-mets">
+            <div class="lmet"><div class="mv">4</div><div class="ml">Modules</div></div>
+            <div class="lmet"><div class="mv">Omni</div><div class="ml">Channel</div></div>
+            <div class="lmet"><div class="mv">AI</div><div class="ml">Route Optimised</div></div>
+            <div class="lmet"><div class="mv">CRM</div><div class="ml">Integrated</div></div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="product-card">
-        <div class="product-num">02 / Asset Reconstruction</div>
-        <div class="product-icon">🏦</div>
-        <h3>ARC Intelligence Suite</h3>
-        <p>
-          Empowers Asset Reconstruction Companies with cutting-edge portfolio analytics.
-          Preview stressed asset portfolios with precision, generate optimal bid strategies,
-          and maintain healthy profit margins in competitive ARC bidding environments.
-        </p>
-        <div class="product-tags">
-          <span class="product-tag">Portfolio Preview</span>
-          <span class="product-tag">Bid Optimization</span>
-          <span class="product-tag">Risk Pricing</span>
-          <span class="product-tag">Competitor Analysis</span>
+    <div class="layer" data-t="analytics" onclick="toggleLayer(this)">
+      <div class="layer-hdr">
+        <span class="layer-lnum">L2</span>
+        <div class="layer-ico">📊</div>
+        <div class="layer-info"><strong>Analytics Layer</strong><span>Real-time visibility into borrower behaviour and agent performance</span></div>
+        <span class="layer-chevron">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="layer-inner">
+          <div class="layer-mods" style="grid-template-columns:1fr">
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>Real-Time Portfolio Intelligence Dashboard</div><p>Live streams of borrower engagement signals, payment events, and agent activity. Portfolio managers see the entire book at a glance — no waiting for end-of-day reports. Drill into any account, any agent, any cohort instantly. Complete control, complete visibility.</p></div>
+          </div>
+          <div class="layer-mets">
+            <div class="lmet"><div class="mv">Live</div><div class="ml">Data Streams</div></div>
+            <div class="lmet"><div class="mv">360°</div><div class="ml">Borrower View</div></div>
+            <div class="lmet"><div class="mv">↓60%</div><div class="ml">Reporting Lag</div></div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="product-card">
-        <div class="product-num">03 / Trace & Locate</div>
-        <div class="product-icon">📡</div>
-        <h3>Skip Trace Network</h3>
-        <p>
-          Advanced borrower location and contact intelligence. Our skip-trace infrastructure
-          connects multiple data sources to re-establish contact with hard-to-reach accounts,
-          increasing the recoverable pool significantly.
-        </p>
-        <div class="product-tags">
-          <span class="product-tag">Multi-source Data</span>
-          <span class="product-tag">Contact Recovery</span>
-          <span class="product-tag">Compliance-first</span>
+    <div class="layer open" data-t="intel" onclick="toggleLayer(this)">
+      <div class="layer-hdr">
+        <span class="layer-lnum">L3</span>
+        <div class="layer-ico">🧠</div>
+        <div class="layer-info"><strong>Intelligence Layer</strong><span>Deep RL that decides strategy, allocation, and last-mile conversion</span></div>
+        <span class="layer-chevron">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="layer-inner">
+          <div class="layer-mods">
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>SEAM — Strategy & Allocation Engine</div><p>Optimizes collection strategies and portfolio allocation using Deep Reinforcement Learning. SEAM learns which borrower segments respond to which approaches, then automatically routes accounts for maximum resolution.</p></div>
+            <div class="lmod"><div class="lmod-name"><span class="lmod-dot"></span>LMC — Last Mile Conversion AI</div><p>AI-driven recommendation engine generating customized last-mile strategies: tailored call scripts, tone guidance, and optimal settlement offer windows — for each individual borrower, in real-time.</p></div>
+          </div>
+          <div class="layer-mets">
+            <div class="lmet"><div class="mv">DRL</div><div class="ml">Core Engine</div></div>
+            <div class="lmet"><div class="mv">↑40%</div><div class="ml">Recovery Rate</div></div>
+            <div class="lmet"><div class="mv">∞</div><div class="ml">Self-Learning</div></div>
+            <div class="lmet"><div class="mv">1:1</div><div class="ml">Per Borrower</div></div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="product-card">
-        <div class="product-num">04 / Full Lifecycle</div>
-        <div class="product-icon">🔗</div>
-        <h3>End-to-End Service</h3>
-        <p>
-          From first delinquency signal to full resolution — Collekto provides a complete
-          full-stack collection service. Lenders and banks get a single partner handling
-          strategy, execution, compliance, and reporting.
-        </p>
-        <div class="product-tags">
-          <span class="product-tag">Strategy & Execution</span>
-          <span class="product-tag">Regulatory Compliance</span>
-          <span class="product-tag">Real-time Reporting</span>
-        </div>
+  </div>
+</div>
+</section>
+
+
+<!-- BORROWER JOURNEY -->
+<section id="journey">
+<div class="sec">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:end;margin-bottom:1rem">
+    <div>
+      <div class="label">How It Works</div>
+      <h2 class="sec-title">The <em>Borrower</em><br>Resolution Journey</h2>
+    </div>
+    <p class="sec-desc" style="align-self:end">From first delinquency signal to final resolution — every stage is intelligent, humane, and data-driven.</p>
+  </div>
+  <div class="journey-wrap">
+    <div class="journey-line-v"></div>
+    <div class="jitems">
+
+      <div class="jitem">
+        <div class="jcontent"><span class="jtag tag-teal">Analytics Layer</span><h4>Early Delinquency Signal</h4><p>Predictive models flag at-risk accounts weeks before first missed payment. Proactive, gentle outreach before the relationship deteriorates.</p></div>
+        <div class="jnode"><div class="jdot"></div><div class="jstep">Step 01</div></div>
+        <div class="jempty"></div>
+      </div>
+
+      <div class="jitem">
+        <div class="jempty"></div>
+        <div class="jnode"><div class="jdot"></div><div class="jstep">Step 02</div></div>
+        <div class="jcontent"><span class="jtag tag-gold">Intelligence · SEAM</span><h4>Strategy Allocation</h4><p>SEAM segments the borrower and selects the optimal approach — digital self-cure, telecaller engagement, or field visit — maximising resolution probability.</p></div>
+      </div>
+
+      <div class="jitem">
+        <div class="jcontent"><span class="jtag tag-rust">Execution Layer</span><h4>Multi-Channel Engagement</h4><p>The Communication Suite deploys personalised outreach across the right channels. Digital Comms orchestrates timing and frequency to avoid borrower fatigue.</p></div>
+        <div class="jnode"><div class="jdot"></div><div class="jstep">Step 03</div></div>
+        <div class="jempty"></div>
+      </div>
+
+      <div class="jitem">
+        <div class="jempty"></div>
+        <div class="jnode"><div class="jdot"></div><div class="jstep">Step 04</div></div>
+        <div class="jcontent"><span class="jtag tag-gold">Intelligence · LMC</span><h4>Last-Mile Conversion</h4><p>LMC provides the agent with a real-time script, tone guidance, and optimal settlement window — turning difficult conversations into resolutions.</p></div>
+      </div>
+
+      <div class="jitem">
+        <div class="jcontent"><span class="jtag tag-rust">Field Layer</span><h4>Optimised Field Visit</h4><p>The Field Agent App routes agents using propensity-to-pay scores and live traffic. Agents arrive prepared, visit the right borrowers, and close more.</p></div>
+        <div class="jnode"><div class="jdot"></div><div class="jstep">Step 05</div></div>
+        <div class="jempty"></div>
+      </div>
+
+      <div class="jitem">
+        <div class="jempty"></div>
+        <div class="jnode"><div class="jdot" style="background:var(--gold);border-color:var(--gold3)"></div><div class="jstep">Resolved</div></div>
+        <div class="jcontent" style="border-color:var(--gold2);background:var(--gold-bg)"><span class="jtag tag-gold">Resolution</span><h4>Settlement & Closed</h4><p>Account resolved. Every interaction feeds back into SEAM and LMC — the platform learns, compounding its intelligence across the entire portfolio.</p></div>
       </div>
 
     </div>
   </div>
+</div>
 </section>
 
 
-<!-- ─── TECHNOLOGY ─── -->
-<section id="technology">
-  <div class="section-inner">
-    <div class="section-label">Under the Hood</div>
-    <h2 class="section-title">
-      Technology That<br>
-      <em>Learns</em> and Adapts
-    </h2>
-
-    <div class="tech-layout">
-      <div class="tech-stack">
-
-        <div class="tech-item active" onclick="showTech(this, 0)">
-          <div class="tech-icon-box">🧠</div>
-          <div class="tech-item-content">
-            <strong>Deep Reinforcement Learning</strong>
-            <span>Adaptive decision engine for collections</span>
-          </div>
-        </div>
-
-        <div class="tech-item" onclick="showTech(this, 1)">
-          <div class="tech-icon-box">💰</div>
-          <div class="tech-item-content">
-            <strong>Asset Pricing Algorithm</strong>
-            <span>Winning bids, maximum returns</span>
-          </div>
-        </div>
-
-        <div class="tech-item" onclick="showTech(this, 2)">
-          <div class="tech-icon-box">🔍</div>
-          <div class="tech-item-content">
-            <strong>Predictive Analytics</strong>
-            <span>Delinquency forecasting and early signals</span>
-          </div>
-        </div>
-
-        <div class="tech-item" onclick="showTech(this, 3)">
-          <div class="tech-icon-box">🛡️</div>
-          <div class="tech-item-content">
-            <strong>Compliance Engine</strong>
-            <span>RBI-aligned, audit-ready processes</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="tech-detail" id="tech-detail">
-        <div class="tech-detail-title">Deep Reinforcement Learning</div>
-        <div class="tech-detail-desc">
-          Collekto's core algorithm treats debt collection as a sequential decision problem.
-          The agent continuously learns optimal communication strategies, timing, and
-          settlement offers for each unique borrower — improving with every interaction.
-          Unlike rule-based systems, it adapts to behavioral shifts in real-time.
-        </div>
-        <div class="tech-detail-metrics">
-          <div class="tech-metric"><div class="val">↑40%</div><div class="lab">Recovery Rate</div></div>
-          <div class="tech-metric"><div class="val">3×</div><div class="lab">Faster Turnaround</div></div>
-          <div class="tech-metric"><div class="val">AI</div><div class="lab">Adaptive Model</div></div>
-          <div class="tech-metric"><div class="val">∞</div><div class="lab">Self-Improving</div></div>
-        </div>
-      </div>
-    </div>
+<!-- SERVICES BENTO -->
+<section id="services">
+<div class="sec">
+  <div class="label">What We Offer</div>
+  <h2 class="sec-title">Built for Every<br><em>Lending</em> Institution</h2>
+  <div class="bento">
+    <div class="bcell reveal"><span class="bc-icon">📞</span><div class="bc-label">Execution · Communication</div><h3>Smart Dialer & CRM Integration</h3><p>Telecallers equipped with borrower context, payment history, and AI-generated scripts. Every call informed, every conversation purposeful.</p><div class="bc-pills"><span class="bc-pill">Smart Dialer</span><span class="bc-pill">CRM Sync</span><span class="bc-pill">Script AI</span></div></div>
+    <div class="bcell reveal"><span class="bc-icon">🗺️</span><div class="bc-label">Execution · Field</div><h3>Field Agent Route Intelligence</h3><p>Location-aware, traffic-optimised visit planning ranked by borrower propensity. Agents do more with less, every day.</p><div class="bc-pills"><span class="bc-pill">Route Optimisation</span><span class="bc-pill">Propensity Ranking</span></div></div>
+    <div class="bcell tall accent-gold reveal"><span class="bc-icon">🧠</span><div class="bc-label">Intelligence · Core AI</div><h3>SEAM + LMC: The Intelligence Core</h3><p style="margin-bottom:1rem">The most advanced layer of the platform. SEAM optimizes strategy allocation. LMC tells your agent exactly what to say and how to say it.</p><p>Together they create a continuously improving feedback loop — every resolved account makes the next one easier.</p><div class="bc-pills" style="margin-top:1.5rem"><span class="bc-pill" style="border-color:var(--gold);color:var(--gold3)">Deep RL</span><span class="bc-pill" style="border-color:var(--gold);color:var(--gold3)">Self-Learning</span><span class="bc-pill" style="border-color:var(--gold);color:var(--gold3)">1:1 Strategy</span></div></div>
+    <div class="bcell wide reveal"><span class="bc-icon">📡</span><div class="bc-label">Analytics · Real-Time</div><h3>Live Portfolio Intelligence Dashboard</h3><p>Real-time visibility into borrower behaviour, agent performance, and portfolio health. Drill into any account, cohort, or agent in seconds. No lag, no guesswork — just actionable insight.</p><div class="bc-pills"><span class="bc-pill">Real-Time Streams</span><span class="bc-pill">Agent Monitoring</span><span class="bc-pill">Portfolio Analytics</span><span class="bc-pill">Borrower 360°</span></div></div>
+    <div class="bcell reveal"><span class="bc-icon">📬</span><div class="bc-label">Execution · Digital</div><h3>Automated Multi-Channel Comms</h3><p>Orchestrated SMS, WhatsApp, email, and IVR campaigns — timed and personalised by AI. Reach borrowers where they respond.</p></div>
+    <div class="bcell reveal"><span class="bc-icon">⚖️</span><div class="bc-label">Execution · Legal (Upcoming)</div><h3>Litigation Control Module</h3><p>Coming soon — full in-platform control of your litigation pipeline. Track, escalate, resolve. No more spreadsheets or separate systems.</p></div>
   </div>
+</div>
 </section>
 
 
-<!-- ─── WHY COLLEKTO ─── -->
+<!-- WHY US -->
 <section id="why">
-  <div class="section-inner">
-    <div class="section-label">Differentiation</div>
-    <h2 class="section-title">
-      Why <em>Collekto</em><br>
-      Outperforms
-    </h2>
-
-    <div class="why-grid">
-      <div class="why-card">
-        <div class="why-num">01</div>
-        <h4>Human-Centred AI</h4>
-        <p>Systems that understand borrowers rather than trap them, leading to higher voluntary repayment and reduced litigation costs.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">02</div>
-        <h4>Proprietary DRL Models</h4>
-        <p>Bespoke deep reinforcement learning architecture trained on India's unique debt market dynamics — not a generic global model.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">03</div>
-        <h4>End-to-End Coverage</h4>
-        <p>From prediction through recovery — Collekto's full-stack service eliminates vendor fragmentation and coordination overhead.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">04</div>
-        <h4>ARC-Specific Tooling</h4>
-        <p>Most FinTechs ignore the Asset Reconstruction segment. Collekto built purpose-built bidding intelligence for ARCs from day one.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">05</div>
-        <h4>Regulatory-Ready</h4>
-        <p>Built with RBI guidelines embedded — not bolted on. Every workflow is designed for audit-readiness and compliance documentation.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">06</div>
-        <h4>Continuous Learning</h4>
-        <p>The platform improves with every account it processes — a compounding intelligence advantage that grows over time.</p>
-      </div>
-    </div>
+<div class="sec">
+  <div class="label">Why Collekto</div>
+  <h2 class="sec-title">Six Reasons the Best<br>Lenders Choose <em>Us</em></h2>
+  <div class="why-grid">
+    <div class="wcard reveal"><div class="wcard-big">01</div><div class="wcard-icon">🏛️</div><h4>25 Years of Operational Insight</h4><p>Our platform was built from scars, not slides. No pure-tech startup has lived the collections business from the inside the way we have.</p></div>
+    <div class="wcard reveal"><div class="wcard-big">02</div><div class="wcard-icon">🤖</div><h4>Proprietary Deep RL Architecture</h4><p>SEAM and LMC are bespoke reinforcement learning systems trained on India's unique debt recovery dynamics — not generic global models.</p></div>
+    <div class="wcard reveal"><div class="wcard-big">03</div><div class="wcard-icon">🔗</div><h4>End-to-End, One Platform</h4><p>From early delinquency signals to field visits to litigation — one coherent system. No integration nightmares, no data silos.</p></div>
+    <div class="wcard reveal"><div class="wcard-big">04</div><div class="wcard-icon">⚖️</div><h4>Human-Centred, Compliance-First</h4><p>Built to empower borrowers, not entrap them. RBI-aligned processes baked in — not bolted on. Every interaction is audit-ready by default.</p></div>
+    <div class="wcard reveal"><div class="wcard-big">05</div><div class="wcard-icon">📈</div><h4>Proven, Measurable Outcomes</h4><p>Better controls, real-time monitoring, cost savings, and increased efficiency. We deliver track records that speak for themselves.</p></div>
+    <div class="wcard reveal"><div class="wcard-big">06</div><div class="wcard-icon">🔄</div><h4>The Compounding Advantage</h4><p>Every resolved account trains SEAM and LMC. The platform gets smarter with each interaction — a moat that grows over time.</p></div>
   </div>
+</div>
 </section>
 
 
-<!-- ─── CONTACT ─── -->
+<!-- CONTACT -->
 <section id="contact">
-  <div class="contact-inner">
-    <div class="section-label" style="justify-content:center;">Contact</div>
-    <h2 class="section-title">
-      Ready to <em>Transform</em><br>
-      Your Collections?
-    </h2>
-    <p class="section-desc" style="margin: 1rem auto 0; text-align: center;">
-      Partner with Collekto to deploy next-generation AI across your retail loan book or asset portfolio.
-    </p>
-    <div class="contact-form">
-      <input type="email" placeholder="Your work email address" />
-      <button type="button">Request Demo</button>
+<div class="sec">
+  <div class="contact-grid">
+    <div>
+      <div class="label">Get in Touch</div>
+      <h2 class="sec-title">Transform Your<br><em>Collections</em> Today</h2>
+      <p class="sec-desc">Whether you're a large financial institution or a growing lending company — Collekto tailors to your specific needs.</p>
+      <div class="cinfo">
+        <div class="ci"><div class="ci-ico">📍</div><div class="ci-text"><strong>Location</strong><span>India</span></div></div>
+        <div class="ci"><div class="ci-ico">🗓️</div><div class="ci-text"><strong>Founded</strong><span>2018 · 51–200 Employees</span></div></div>
+        <div class="ci"><div class="ci-ico">🌐</div><div class="ci-text"><strong>Website</strong><span>collekto.in</span></div></div>
+        <div class="ci"><div class="ci-ico">🏦</div><div class="ci-text"><strong>We Serve</strong><span>Lending Institutions · ARCs · Collection Agencies</span></div></div>
+      </div>
     </div>
-    <p style="margin-top:1.5rem; font-size:0.82rem; color:var(--text-muted);">
-      📍 India &nbsp;·&nbsp; Founded 2018 &nbsp;·&nbsp; 51–200 employees
-    </p>
+    <div>
+      <div class="cform">
+        <div class="cf-row">
+          <div class="cf"><label>Full Name</label><input type="text" placeholder="Your name"/></div>
+          <div class="cf"><label>Work Email</label><input type="email" placeholder="you@company.com"/></div>
+        </div>
+        <div class="cf"><label>Organisation</label><input type="text" placeholder="Bank / NBFC / ARC / Collection Agency"/></div>
+        <div class="cf"><label>Your Challenge</label><textarea rows="5" placeholder="Tell us about your collections challenge — portfolio size, current pain points, what you're looking to solve…"></textarea></div>
+        <button class="csub" type="button">Request a Demo →</button>
+      </div>
+    </div>
   </div>
+</div>
 </section>
 
 
-<!-- ─── FOOTER ─── -->
+<!-- FOOTER -->
 <footer>
-  <a href="#" class="footer-logo">Collekto</a>
-  <p class="footer-copy">© 2024 Collekto. All rights reserved.</p>
-  <ul class="footer-links">
+  <a href="#" class="fmark">Collekto</a>
+  <p class="fcopy">© 2024 Collekto · India's Intelligence-First Collections Platform</p>
+  <ul class="flinks">
     <li><a href="#about">About</a></li>
-    <li><a href="#products">Products</a></li>
-    <li><a href="#technology">Tech</a></li>
+    <li><a href="#architecture">Platform</a></li>
+    <li><a href="#services">Services</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
 </footer>
 
 
-<!-- ─── SCRIPTS ─── -->
 <script>
-  // ── Network Canvas Animation ──
-  const canvas = document.getElementById('network-canvas');
-  const ctx = canvas.getContext('2d');
-  let nodes = [], width, height;
-  const GOLD = 'rgba(201,168,76,';
+// LAYER TOGGLE
+function toggleLayer(el){
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.layer').forEach(l=>l.classList.remove('open'));
+  if(!was)el.classList.add('open');
+}
 
-  function resize() {
-    width = canvas.width = canvas.offsetWidth;
-    height = canvas.height = canvas.offsetHeight;
-  }
+// SCROLL REVEAL
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')});
+},{threshold:0.1});
+document.querySelectorAll('.reveal,.jcontent').forEach(el=>ro.observe(el));
 
-  function initNodes() {
-    nodes = [];
-    const count = Math.floor((width * height) / 14000);
-    for (let i = 0; i < count; i++) {
-      nodes.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r: Math.random() * 2 + 1
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    const maxDist = 120;
-
-    for (let i = 0; i < nodes.length; i++) {
-      const n = nodes[i];
-      n.x += n.vx; n.y += n.vy;
-      if (n.x < 0 || n.x > width) n.vx *= -1;
-      if (n.y < 0 || n.y > height) n.vy *= -1;
-
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = GOLD + '0.6)';
-      ctx.fill();
-
-      for (let j = i + 1; j < nodes.length; j++) {
-        const m = nodes[j];
-        const dx = n.x - m.x, dy = n.y - m.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.2;
-          ctx.beginPath();
-          ctx.moveTo(n.x, n.y);
-          ctx.lineTo(m.x, m.y);
-          ctx.strokeStyle = GOLD + alpha + ')';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', () => { resize(); initNodes(); });
-  resize(); initNodes(); draw();
-
-  // ── Tech Tab Switcher ──
-  const techData = [
-    {
-      title: 'Deep Reinforcement Learning',
-      desc: "Collekto's core algorithm treats debt collection as a sequential decision problem. The DRL agent continuously learns optimal communication strategies, timing, and settlement offers for each unique borrower — improving with every interaction. Unlike rule-based systems, it adapts to behavioral shifts in real time.",
-      metrics: [['↑40%','Recovery Rate'],['3×','Faster Turnaround'],['AI','Adaptive Model'],['∞','Self-Improving']]
-    },
-    {
-      title: 'Asset Pricing Algorithm',
-      desc: "Purpose-built for Asset Reconstruction Companies, our pricing engine ingests stressed portfolio data and generates optimal bid ranges against competitors. It balances acquisition cost against projected recovery, helping ARCs win bids profitably with data-backed confidence.",
-      metrics: [['↑28%','Bid Win Rate'],['95%','Pricing Accuracy'],['Real-time','Market Signals'],['Risk-adj.','Returns Model']]
-    },
-    {
-      title: 'Predictive Analytics',
-      desc: "Our predictive layer identifies borrowers likely to become delinquent weeks before default. Early signals allow proactive intervention — softer conversations, flexible restructuring, and better outcomes — rather than expensive post-default recovery.",
-      metrics: [['14 days','Early Warning'],['87%','Prediction Accuracy'],['Cohort','Segmentation'],['Proactive','Intervention']]
-    },
-    {
-      title: 'Compliance Engine',
-      desc: "Every workflow is built RBI-aligned from the ground up. Automated audit trails, call recording compliance, do-not-call list management, and regulatory reporting are baked in — not bolted on. Lenders get peace of mind; borrowers get fair treatment.",
-      metrics: [['RBI','Aligned',''],['100%','Audit Trail'],['Zero','Violations'],['GDPR-','Ready']]
-    }
-  ];
-
-  function showTech(el, idx) {
-    document.querySelectorAll('.tech-item').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    const d = techData[idx];
-    const detail = document.getElementById('tech-detail');
-    detail.innerHTML = `
-      <div class="tech-detail-title">${d.title}</div>
-      <div class="tech-detail-desc">${d.desc}</div>
-      <div class="tech-detail-metrics">
-        ${d.metrics.map(m => `<div class="tech-metric"><div class="val">${m[0]}</div><div class="lab">${m[1]}</div></div>`).join('')}
-      </div>
-    `;
-  }
-
-  // ── Scroll Reveal ──
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.product-card, .why-card, .tech-item').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    observer.observe(el);
-  });
+// NAV SCROLL
+window.addEventListener('scroll',()=>{
+  const n=document.querySelector('nav');
+  n.style.boxShadow=window.scrollY>50?'0 2px 24px rgba(26,24,18,0.1)':'none';
+});
 </script>
-
 </body>
 </html>
